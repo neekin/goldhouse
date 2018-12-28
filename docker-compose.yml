@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  db:
+    container_name: mysql-db
+    build: db/.
+    ports:
+    - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_DATABASE: 'minabase'
+    volumes:
+      - ./tmp/db:/var/lib/mysql
+  web:
+    build: .
+    command: sh -c 'FLASK_APP=manage.py   FLASK_ENV=development  flask run --host="0.0.0.0"'
+    volumes:
+      - .:/code
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    links:
+      - db
