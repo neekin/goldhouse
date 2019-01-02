@@ -1,6 +1,5 @@
 from . import api_index
-from flask import request, jsonify, json
-from flask import current_app
+from flask import request, jsonify, json, current_app
 import requests
 from models.OauthMemberBind import OauthMemberBind
 from models.Member import Member
@@ -20,8 +19,7 @@ def login():
         .format(current_app.config['MINA_APP']['appid'], current_app.config['MINA_APP']['appSecret'], code)
 
     r = requests.get(url)
-    rjson = json.loads(r.text)
-    openid = rjson['openid']
+    openid = json.loads(r.text)['openid']
     bind_info = OauthMemberBind.query.filter_by(openid=openid).first()
     if not bind_info:
         model_member = Member()
@@ -38,7 +36,5 @@ def login():
         model_bind.type = 1
         model_bind.openid = openid
         model_bind.add_update()
-
-    # current_app.logger.info(rjson['openid'])
 
     return jsonify(result)
